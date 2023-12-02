@@ -93,10 +93,10 @@ generateDummyData = async () => {
             }
 
             const dateInfos = [
-                new DateInfo({startDate: new Date(2023, 11, 1), endDate: new Date(2023, 11, 3)}),
-                new DateInfo({startDate: new Date(2023, 11, 11), endDate: new Date(2023, 11, 16)}),
-                new DateInfo({startDate: new Date(2023, 12, 11), endDate: new Date(2023, 12, 16)}),
-                new DateInfo({startDate: new Date(2024, 1, 11), endDate: new Date(2024, 1, 16)})
+                new DateInfo({startDate: new Date(2023, 10, 2), endDate: new Date(2023, 10, 4)}),
+                new DateInfo({startDate: new Date(2023, 10, 12), endDate: new Date(2023, 10, 17)}),
+                new DateInfo({startDate: new Date(2023, 11, 12), endDate: new Date(2023, 11, 17)}),
+                new DateInfo({startDate: new Date(2024, 0, 12), endDate: new Date(2024, 0, 17)})
             ]
             const fares = [
                 {weekdayCount: 3, weekendCount: 0},
