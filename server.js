@@ -13,7 +13,7 @@ const DB_URI = "mongodb://127.0.0.1:27017/accommodation_reservation_mongo";
 const server = async () => {
     try {
         await mongoose.connect(DB_URI)
-        await generateDummyData(1, 1, 1)
+        await generateDummyData()
         app.use(express.json())
         app.listen(port, hostname, function () {
             console.log(`서버 http://${hostname}:${port}/ 에서 실행 중`)

@@ -6,4 +6,4 @@ const DateInfoSchema = new Schema({
 })
 
 const DateInfo = model("DateInfo", DateInfoSchema)
-module.exports = {DateInfo}
+module.exports = {DateInfoSchema, DateInfo}

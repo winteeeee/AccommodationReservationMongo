@@ -8,4 +8,4 @@ const AccessibilityAmenitiesSchema = new Schema({
 })
 
 const AccessibilityAmenities = model("AccessibilityAmenities", AccessibilityAmenitiesSchema)
-module.exports = {AccessibilityAmenities}
+module.exports = {AccessibilityAmenities, AccessibilityAmenitiesSchema}
