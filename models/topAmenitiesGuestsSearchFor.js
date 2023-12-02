@@ -14,4 +14,4 @@ const TopAmenitiesGuestsSearchForSchema = new Schema({
 })
 
 const TopAmenitiesGuestsSearchFor = model("TopAmenitiesGuestsSearchFor", TopAmenitiesGuestsSearchForSchema)
-module.exports = {TopAmenitiesGuestsSearchFor}
+module.exports = {TopAmenitiesGuestsSearchFor, TopAmenitiesGuestsSearchForSchema}

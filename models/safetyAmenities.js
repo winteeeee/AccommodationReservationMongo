@@ -9,4 +9,4 @@ const SafetyAmenitiesSchema = new Schema({
 })
 
 const SafetyAmenities = model("SafetyAmenities", SafetyAmenitiesSchema)
-module.exports = {SafetyAmenities}
+module.exports = {SafetyAmenities, SafetyAmenitiesSchema}

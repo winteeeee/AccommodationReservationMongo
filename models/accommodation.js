@@ -1,11 +1,11 @@
 const {Schema, model, Types} = require("mongoose");
-const {BasicAmenities} = require("./basicAmenities");
-const {TopAmenitiesGuestsSearchFor} = require("./topAmenitiesGuestsSearchFor");
-const {SafetyAmenities} = require("./safetyAmenities");
-const {AccessibilityAmenities} = require("./accessibilityAmenities");
+const {BasicAmenitiesSchema} = require("./basicAmenities");
+const {TopAmenitiesGuestsSearchForSchema} = require("./topAmenitiesGuestsSearchFor");
+const {SafetyAmenitiesSchema} = require("./safetyAmenities");
+const {AccessibilityAmenitiesSchema} = require("./accessibilityAmenities");
 
 const AccommodationSchema = new Schema({
-    spaceType: { type: String, required: true, enum: ['ENTIRE_PLACE, PRIVATE_ROOM'] },
+    spaceType: { type: String, required: true, enum: ['ENTIRE_PLACE', 'PRIVATE_ROOM'] },
     name: { type: String, required: true },
     address: { type: String, required: true },
     accommodatedPerson: { type: Number, required: true },
@@ -13,13 +13,13 @@ const AccommodationSchema = new Schema({
     bedroom: { type: Number, required: true },
     bed: { type: Number, required: true },
     bathroom: { type: Number, required: true },
-    introduction: { type: Number, required: true },
+    introduction: { type: String, required: true },
     weekdayFare: { type: Number, required: true },
     weekendFare: { type: Number, required: true },
-    basicAmenities: [BasicAmenities],
-    topAmenitiesGuestsSearchFor: [TopAmenitiesGuestsSearchFor],
-    safetyAmenities: [SafetyAmenities],
-    accessibilityAmenities: [AccessibilityAmenities]
+    basicAmenities: [BasicAmenitiesSchema],
+    topAmenitiesGuestsSearchFor: [TopAmenitiesGuestsSearchForSchema],
+    safetyAmenities: [SafetyAmenitiesSchema],
+    accessibilityAmenities: [AccessibilityAmenitiesSchema]
 })
 
 AccommodationSchema.virtual("reservations", {

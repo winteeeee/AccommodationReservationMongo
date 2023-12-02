@@ -10,4 +10,4 @@ const BasicAmenitiesSchema = new Schema({
 })
 
 const BasicAmenities = model("BasicAmenities", BasicAmenitiesSchema)
-module.exports = {BasicAmenities}
+module.exports = {BasicAmenities, BasicAmenitiesSchema}
