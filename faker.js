@@ -18,7 +18,7 @@ generateDummyData = async () => {
 
     console.log("더미 데이터를 생성합니다")
     console.log("멤버 더미 데이터 생성")
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 10; i++) {
         members.push(new Member({
             id: faker.internet.userName() + parseInt(Math.random() * 100),
             password: faker.lorem.words(),
@@ -67,6 +67,7 @@ generateDummyData = async () => {
             })
 
             let spaceType = idx < 5 ? 'ENTIRE_PLACE' : 'PRIVATE_ROOM'
+            console.log("숙소 더미 데이터 생성")
             accommodations.push(new Accommodation({
                 spaceType: spaceType,
                 name: name,
@@ -106,10 +107,11 @@ generateDummyData = async () => {
             ]
 
 
+            console.log("예약/리뷰 더미 데이터 생성")
             for (let i = 0; i < 4; i++) {
                 if (i < 2) {
                     reservations.push(new Reservation({
-                        guest: members[0],
+                        guest: members[parseInt(Math.random() * 10)],
                         accommodation: accommodations[idx],
                         review: reviews[i],
                         dateInfo: dateInfos[i],
@@ -119,7 +121,7 @@ generateDummyData = async () => {
                     }))
                 } else {
                     reservations.push(new Reservation({
-                        guest: members[0],
+                        guest: members[parseInt(Math.random() * 10)],
                         accommodation: accommodations[idx],
                         review: null,
                         dateInfo: dateInfos[i],
