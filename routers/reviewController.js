@@ -1,10 +1,6 @@
 const { Router } = require("express");
-const accommodationRouter = require('./accommodationController');
 const { Review } = require("../models/review");
 const { Reservation } = require("../models/reservation");
-const { isValidObjectId } = require("mongoose");
-const { Accommodation } = require("../models/accommodation");
-const { Member } = require("../models/member");
 
 const reviewRouter = Router();
 reviewRouter.post("/", async (req, res) => {
