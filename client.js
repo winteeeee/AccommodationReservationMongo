@@ -29,7 +29,7 @@ const client = async () => {
 
     console.log("[검사항목 2]")
     console.log("- 숙소 id를 이용해 상세조회를 합니다")
-    const accommodationId = '6571fb8a38ed1e4003fac8cf'
+    const accommodationId = '65724affdb28bbe6a7496f34'
     findHouseDetail(accommodationId)
 
     // wait()
@@ -129,8 +129,8 @@ async function findHouseDetail(accommodation_id) {
         const monthDays = getMonthDays(currentYear, currentMonth);
         const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
 
-        // 출력: 요일
-        console.log(daysOfWeek.join('\t'));
+        // 달력 위에 년도와 월 출력
+        console.log(`${currentYear}년 ${currentMonth + 1}월`);
 
         // 출력: 첫 번째 주 전까지의 빈 칸
         for (let i = 0; i < firstDayOfWeek; i++) {
@@ -143,12 +143,13 @@ async function findHouseDetail(accommodation_id) {
             const formattedDate = date.toISOString().split('T')[0];
 
             if (calendarData[formattedDate]) {
-
                 const remainingCapacity = calendarData[formattedDate]?.remainingCapacity ?? 0;
+                const formattedDay = day < 10 ? `0${day}` : day; // 한 자리 수면 앞에 0 붙이기
 
-                process.stdout.write(`${day}(${remainingCapacity})\t`);
+                process.stdout.write(`${formattedDay}(${remainingCapacity})\t`);
             } else {
-                process.stdout.write(`${day}\t`);
+                const formattedDay = day < 10 ? `0${day}` : day; // 한 자리 수면 앞에 0 붙이기
+                process.stdout.write(`${formattedDay}\t`);
             }
 
             // 줄 바꿈
@@ -163,11 +164,26 @@ async function findHouseDetail(accommodation_id) {
         return Array.from({ length: daysInMonth }, (_, i) => i + 1);
     }
 
+    function printReviews(reviewsObject) {
+        const reviews = reviewsObject.reviews;
+
+        if (!Array.isArray(reviews) || reviews.length === 0) {
+            console.log("리뷰가 없습니다.");
+            return;
+        }
+
+        console.log("번호\t별점\t평가");
+        reviews.forEach((review, index) => {
+            console.log(`${index + 1}\t${review.star}\t${review.review}`);
+        });
+    }
+
 
     try {
         const reservation = await axios.get(`http://127.0.0.1:3000/reservation/${accommodation_id}`);
-
-
+        const review = await axios.get(`http://127.0.0.1:3000/review/${accommodation_id}`);
+        printReviews(review.data)
+        console.log()
         displayCalendar(reservation.data);
 
         // 이후 reservation을 처리하는 코드 추가

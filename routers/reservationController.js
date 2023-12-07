@@ -62,11 +62,46 @@ reservationRouter.get("/:id", async (req, res) => {
             }
         });
 
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth(); // 월은 0부터 시작하므로 현재 월을 가져오기 위해선 1을 더해야 합니다.
+
+        const startOfMonth = new Date(currentYear, currentMonth, 1);
+        const endOfMonth = new Date(currentYear, currentMonth + 1, 0);
+
+        for (let date = new Date(startOfMonth); date <= endOfMonth; date.setDate(date.getDate() + 1)) {
+            const formattedDate = date.toISOString().split('T')[0]; // 날짜만 추출
+            if (!calendar[formattedDate]) {
+                calendar[formattedDate] = { reservePeople: 0 };
+            }
+            calendar[formattedDate].reservePeople += 0; // 0을 더하면 예약인원 변동이 없습니다.
+
+        }
+
         // 캘린더에 수용 가능한 인원 추가
         Object.keys(calendar).forEach(date => {
-            const capacity = reservations.length > 0 ? reservations[0].accommodation.accommodatedPerson : 0;
-            const remainingCapacity = capacity - (calendar[date]?.reservePeople || 0);
-            calendar[date].remainingCapacity = remainingCapacity;
+            const capacity = reservations[0].accommodation.accommodatedPerson;
+            const reservePeople = calendar[date]?.reservePeople || 0;
+
+            if (reservations.length > 0) {
+                const spaceType = reservations[0].accommodation.spaceType;
+
+                let remainingCapacity;
+                if (spaceType === 'ENTIRE_PLACE') {
+                    remainingCapacity = capacity - reservePeople;
+                    calendar[date].remainingCapacity = remainingCapacity === 0 ? 'O' : 'X';
+                } else if (spaceType === 'PRIVATE_ROOM') {
+                    remainingCapacity = capacity - reservePeople;
+                    calendar[date].remainingCapacity = remainingCapacity;
+                }
+            } else {
+                if (spaceType === 'ENTIRE_PLACE') {
+                    calendar[date].remainingCapacity = 'X'; // 만약 예약이 없는 경우
+                } else if (spaceType === 'PRIVATE_ROOM') {
+                    remainingCapacity = capacity - reservePeople;
+                    calendar[date].remainingCapacity = remainingCapacity; // 만약 예약이 없는 경우
+
+                }
+            }
         });
 
         console.log(calendar);

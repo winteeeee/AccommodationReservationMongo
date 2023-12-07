@@ -29,13 +29,34 @@ reviewRouter.post("/", async (req, res) => {
     }
 });
 
-// reviewRouter.get("/", async (req, res) => {
-//     const { accommodationId } = req.params;
-//     if (!isValidObjectId(accommodationId))
-//         return res.status(400).send({ error: "accommodationId is invalid" });
-//     const review = await Comment.find({ accommodation: accommodationId });
-//     return res.send({ review });
-// });
+reviewRouter.get("/:id", async (req, res) => {
+    const accommodation_id = req.params.id;
+
+
+    const currentMonthStartDate = new Date();
+    currentMonthStartDate.setDate(1); // 현재 달의 1일로 설정
+
+    const currentMonthEndDate = new Date();
+    currentMonthEndDate.setMonth(currentMonthEndDate.getMonth() + 1, 0); // 현재 달의 마지막 날로 설정
+
+    const reviews = await Reservation.find({
+        accommodation: accommodation_id,
+    }).populate('review');
+
+    const reviewData = [];
+
+    reviews.forEach(reservation => {
+        if (reservation.review && reservation.review.length > 0) {
+            const reviewObj = {
+                star: reservation.review[0].star,
+                review: reservation.review[0].review
+            };
+            reviewData.push(reviewObj);
+        }
+    });
+    console.log(reviewData)
+    return res.send({ reviews: reviewData });
+});
 //
 // reviewRouter.get("/:accommodationId/:memberId", async (req, res) => {
 //     const { accommodationId, memberId } = req.params;
