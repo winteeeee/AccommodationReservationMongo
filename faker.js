@@ -88,7 +88,7 @@ generateDummyData = async () => {
 
             for (let i = 0; i < 2; i++) {
                 reviews.push(new Review({
-                    star: Math.floor(Math.random() * 5),
+                    star: Math.floor(Math.random() * 5) + 1,
                     review: faker.lorem.paragraph()
                 }))
             }
