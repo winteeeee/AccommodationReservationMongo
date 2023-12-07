@@ -29,4 +29,52 @@ reservationRouter.post("/", async(req, res) => {
     }
 });
 
+reservationRouter.get("/:id", async (req, res) => {
+    try {
+        const accommodation_id = req.params.id;
+
+
+        const currentMonthStartDate = new Date();
+        currentMonthStartDate.setDate(1); // 현재 달의 1일로 설정
+
+        const currentMonthEndDate = new Date();
+        currentMonthEndDate.setMonth(currentMonthEndDate.getMonth() + 1, 0); // 현재 달의 마지막 날로 설정
+
+        const reservations = await Reservation.find({
+            accommodation: accommodation_id,
+            'dateInfo.startDate': { $gte: currentMonthStartDate, $lte: currentMonthEndDate },
+        }).populate('accommodation');
+
+        const calendar={};
+
+        reservations.forEach(reservation => {
+            const startDate = reservation.dateInfo[0].startDate;
+            const endDate = reservation.dateInfo[0].endDate;
+            const accommodatedPerson = reservation.person;
+
+            // startDate부터 endDate까지 각 날짜에 대한 수용인원과 예약인원을 계산하여 캘린더에 저장
+            for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+                const formattedDate = date.toISOString().split('T')[0]; // 날짜만 추출
+                if (!calendar[formattedDate]) {
+                    calendar[formattedDate] = { reservePeople: 0 };
+                }
+                calendar[formattedDate].reservePeople += accommodatedPerson;
+            }
+        });
+
+        // 캘린더에 수용 가능한 인원 추가
+        Object.keys(calendar).forEach(date => {
+            const capacity = reservations.length > 0 ? reservations[0].accommodation.accommodatedPerson : 0;
+            const remainingCapacity = capacity - (calendar[date]?.reservePeople || 0);
+            calendar[date].remainingCapacity = remainingCapacity;
+        });
+
+        console.log(calendar);
+
+        res.json(calendar)
+    } catch (err) {
+        console.log(err);
+        return res.status(400).send({ error: err.message });
+    }
+});
 module.exports = reservationRouter;
