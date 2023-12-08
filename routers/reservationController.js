@@ -105,7 +105,6 @@ reservationRouter.get("/:id", async (req, res) => {
         });
 
         console.log(calendar);
-
         res.json(calendar)
     } catch (err) {
         console.log(err);
