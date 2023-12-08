@@ -1,6 +1,17 @@
 const axios = require("axios");
 
-async function findHouse(checkinDate, checkoutDate, accommodatedPerson, houseType) {
+async function findHouse(checkinDate, checkoutDate, accommodatedPerson, houseTypeCode) {
+    let houseType;
+    if (houseTypeCode === '1') {
+        houseType = 'PRIVATE_ROOM';
+    } else if (houseTypeCode === '2') {
+        houseType = 'ENTIRE_PLACE';
+    } else {
+        console.log('잘못된 선택입니다.');
+        houseType = 'PRIVATE_ROOM';
+        process.exit(1); // 프로그램 종료
+    }
+
     try {
         const response = await axios.get('http://127.0.0.1:3000/accommodation', {
             params: {
