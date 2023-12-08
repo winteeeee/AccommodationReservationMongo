@@ -88,14 +88,16 @@ reservationRouter.get("/:id", async (req, res) => {
                 let remainingCapacity;
                 if (spaceType === 'ENTIRE_PLACE') {
                     remainingCapacity = capacity - reservePeople;
-                    calendar[date].remainingCapacity = remainingCapacity === 0 ? 'O' : 'X';
+                    calendar[date].remainingCapacity = reservePeople === 0 ? 'O' : 'X';
+
+
                 } else if (spaceType === 'PRIVATE_ROOM') {
                     remainingCapacity = capacity - reservePeople;
                     calendar[date].remainingCapacity = remainingCapacity;
                 }
             } else {
                 if (spaceType === 'ENTIRE_PLACE') {
-                    calendar[date].remainingCapacity = 'X'; // 만약 예약이 없는 경우
+                    calendar[date].remainingCapacity = 'O'; // 만약 예약이 없는 경우
                 } else if (spaceType === 'PRIVATE_ROOM') {
                     remainingCapacity = capacity - reservePeople;
                     calendar[date].remainingCapacity = remainingCapacity; // 만약 예약이 없는 경우

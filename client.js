@@ -29,7 +29,7 @@ const client = async () => {
 
     console.log("[검사항목 2]")
     console.log("- 숙소 id를 이용해 상세조회를 합니다")
-    const accommodationId = '65724affdb28bbe6a7496f34'
+    const accommodationId = '65724affdb28bbe6a7496f66'
     findHouseDetail(accommodationId)
 
     // wait()
