@@ -68,7 +68,7 @@ reservationRouter.get("/:id", async (req, res) => {
         const currentMonth = new Date().getMonth(); // 월은 0부터 시작하므로 현재 월을 가져오기 위해선 1을 더해야 합니다.
 
         const startOfMonth = new Date(currentYear, currentMonth, 1);
-        const endOfMonth = new Date(currentYear, currentMonth + 1, 0);
+        const endOfMonth = new Date(currentYear, currentMonth + 1, 1);
 
 
         for (let date = new Date(startOfMonth); date <= endOfMonth; date.setDate(date.getDate() + 1)) {
@@ -90,7 +90,6 @@ reservationRouter.get("/:id", async (req, res) => {
 
                 let remainingCapacity;
                 if (spaceType === 'ENTIRE_PLACE') {
-                    remainingCapacity = capacity - reservePeople;
                     calendar[date].remainingCapacity = reservePeople === 0 ? 'O' : 'X';
 
 
@@ -120,8 +119,6 @@ reservationRouter.get("/:id", async (req, res) => {
 
 reservationRouter.get("/:id/:year/:month", async (req, res) => {
     try {
-        console.log("도착")
-        console.log(req.params)
         const accommodation_id = req.params.id;
         console.log(accommodation_id)
         const select_year = parseInt(req.params.year); // 선택한 연도
