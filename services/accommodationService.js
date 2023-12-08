@@ -24,19 +24,16 @@ async function findHouse(checkinDate, checkoutDate, accommodatedPerson, houseTyp
         });
         const accommodations = response.data.sortedAccommodations;
 
-
         // 각 숙소의 이름, 가격, 별점만 추출하여 새로운 배열로 만듦
-        const result = accommodations.map(accommodation => {
+        return accommodations.map(accommodation => {
             return {
+                id: accommodation._id,
+                spaceType: accommodation.spaceType,
                 name: accommodation.name,
                 price: accommodation.totalPrice,
                 avgRating: accommodation.avgRating,
             };
-        });
-
-
-        // 여기서 response를 처리하거나 반환할 수 있습니다.
-        console.log('숙소 검색 결과:', result);
+        })
     } catch (error) {
         console.error('숙소 검색 중에 오류 발생:', error.response ? error.response.data : error.message);
     }

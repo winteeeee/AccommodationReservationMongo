@@ -26,7 +26,16 @@ async function task1() {
     const checkOut = rl.question("체크아웃 날짜 : ")
     const applicant = rl.question("신청 인원 : ")
     const houseTypeCode = rl.question('숙소 종류를 선택하세요 (1. 개인, 2. 공간 전체): ');
-    await findHouse(checkIn, checkOut, applicant, houseTypeCode)
+    const accommodations = await findHouse(checkIn, checkOut, applicant, houseTypeCode)
+    console.log("================================================")
+    accommodations.forEach((e) => {
+        console.log(`id: ${e.id}`)
+        console.log(`공간 유형: ${e.spaceType}`)
+        console.log(`이름: ${e.name}`)
+        console.log(`총 가격: ${e.price}`)
+        console.log(`평균 별점: ${e.avgRating}`)
+        console.log("================================================")
+    })
     wait()
 }
 
