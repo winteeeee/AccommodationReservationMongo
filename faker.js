@@ -26,6 +26,7 @@ generateDummyData = async () => {
         }))
     }
 
+    console.log("숙소/예약/리뷰 더미 데이터 생성")
     fs.readFile('accommodationNames', 'utf8', (err, data) => {
         const names = data.split('\n')
         names.forEach((name, idx) => {
@@ -67,7 +68,6 @@ generateDummyData = async () => {
             })
 
             let spaceType = idx < 5 ? 'ENTIRE_PLACE' : 'PRIVATE_ROOM'
-            console.log("숙소 더미 데이터 생성")
             accommodations.push(new Accommodation({
                 spaceType: spaceType,
                 name: name,
@@ -106,8 +106,6 @@ generateDummyData = async () => {
                 {weekdayCount: 4, weekendCount: 2}
             ]
 
-
-            console.log("예약/리뷰 더미 데이터 생성")
             for (let i = 0; i < 4; i++) {
                 if (i < 2) {
                     reservations.push(new Reservation({
