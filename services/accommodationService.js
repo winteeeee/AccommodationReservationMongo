@@ -1,4 +1,5 @@
 const axios = require("axios");
+const rl = require("readline-sync")
 
 async function findHouse(checkinDate, checkoutDate, accommodatedPerson, houseTypeCode) {
     let houseType;
@@ -40,28 +41,29 @@ async function findHouse(checkinDate, checkoutDate, accommodatedPerson, houseTyp
         console.error('숙소 검색 중에 오류 발생:', error.response ? error.response.data : error.message);
     }
 }
-
 async function findHouseDetail(accommodation_id) {
     function displayCalendar(calendarData) {
         const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const currentYear = 2023;
-        const currentMonth = 11; // 0부터 시작하는 월 (11은 12월을 나타냄)
-        const monthDays = getMonthDays(currentYear, currentMonth);
-        const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
 
+        const dates = Object.keys(calendarData);
+        const [currentYear, currentMonth] = dates[0].split('-').map(Number);
+
+        const monthDays = getMonthDays(currentYear, currentMonth-1);
+        const firstDayOfWeek = new Date(currentYear, currentMonth-1, 1).getDay();
+
+        console.log()
         // 달력 위에 년도와 월 출력
-        console.log(`${currentYear}년 ${currentMonth + 1}월`);
+        console.log(`${currentYear}년 ${currentMonth}월`);
+        console.log(daysOfWeek.join('\t'));
 
         // 출력: 첫 번째 주 전까지의 빈 칸
         for (let i = 0; i < firstDayOfWeek; i++) {
             process.stdout.write('\t');
         }
-
         // 출력: 각 날짜와 예약 정보
         monthDays.forEach(day => {
-            const date = new Date(currentYear, currentMonth, day);
+            const date = new Date(currentYear, currentMonth-1, day+1);
             const formattedDate = date.toISOString().split('T')[0];
-
             if (calendarData[formattedDate]) {
                 const remainingCapacity = calendarData[formattedDate]?.remainingCapacity ?? 0;
                 const formattedDay = day < 10 ? `0${day}` : day; // 한 자리 수면 앞에 0 붙이기
@@ -77,6 +79,7 @@ async function findHouseDetail(accommodation_id) {
                 console.log();
             }
         });
+        console.log()
     }
 
     function getMonthDays(year, month) {
@@ -105,11 +108,16 @@ async function findHouseDetail(accommodation_id) {
         printReviews(review.data)
         console.log()
         displayCalendar(reservation.data);
+        const year = rl.question("\n 조회하고 싶은 년도 : ")
+        const month = rl.question("\n 조회하고 싶은 달 : ")
+        const reservation_want = await axios.get(`http://127.0.0.1:3000/reservation/${accommodation_id}/${year}/${month}`);
+        displayCalendar(reservation_want.data)
 
         // 이후 reservation을 처리하는 코드 추가
     } catch (error) {
         console.error('서버 요청 중 오류 발생:', error);
     }
+
 }
 
 module.exports = {findHouse, findHouseDetail}
