@@ -4,14 +4,25 @@ const {Accommodation} = require("../models/accommodation");
 const {Member} = require("../models/member");
 const reservationRouter = Router();
 
+reservationRouter.post("/cancelReservation", async(req, res) => {
+    try{
+        const {reserveId} = req.body;
+        const cancelledReservation = await Reservation.findByIdAndDelete(reserveId);
+        if (!cancelledReservation) {
+            return res.status(404).send({ error: '예약을 찾을 수 없습니다' });
+        }
+        return res.status(200).send({ message: '예약이 취소되었습니다.', cancelledReservation });
+    } catch(error) {
+        return res.status(400).send({error: error.message})
+    } 
+});
+
 reservationRouter.post("/", async(req, res) => {
     try {
-        const {guestId, houseId, review, dateInfo, person} = req.body;
+        const {guestId, houseId, review, dateInfo, person, fare} = req.body;
         const guest = await Member.findOne({id: guestId})
         const house = await Accommodation.findById(houseId)
         const room = house.spaceType === "ENTIRE_PLACE" ? house.room : person
-        const fare = 100
-        //TODO 체크인, 체크아웃 날짜를 기반으로 fare 계산
 
         const reservation = new Reservation({
             guest: guest,
