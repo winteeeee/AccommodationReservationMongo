@@ -101,6 +101,19 @@ async function findHouseDetail(accommodation_id) {
         });
     }
 
+    // 입력값이 유효한지 확인하는 함수
+    function validateYear(input) {
+        const currentYear = new Date().getFullYear();
+        const yearRegex = /^\d{4}$/;
+        const parsedYear = parseInt(input, 10);
+        return yearRegex.test(input) && parsedYear >= currentYear;
+    }
+
+
+    function validateMonth(input) {
+        const monthNumber = parseInt(input, 10);
+        return !isNaN(monthNumber) && monthNumber >= 1 && monthNumber <= 12;
+    }
 
     try {
         const reservation = await axios.get(`http://127.0.0.1:3000/reservation/${accommodation_id}`);
@@ -108,10 +121,22 @@ async function findHouseDetail(accommodation_id) {
         printReviews(review.data)
         console.log()
         displayCalendar(reservation.data);
-        const year = rl.question("\n 조회하고 싶은 년도 : ")
-        const month = rl.question("\n 조회하고 싶은 달 : ")
-        const reservation_want = await axios.get(`http://127.0.0.1:3000/reservation/${accommodation_id}/${year}/${month}`);
-        displayCalendar(reservation_want.data)
+        while (true) {
+            const year = rl.question("\n조회하고 싶은 년도 : ")
+            if(validateYear(year)){
+                const month = rl.question("\n조회하고 싶은 달 : ")
+                if(validateMonth(month)){
+                    const reservation_want = await axios.get(`http://127.0.0.1:3000/reservation/${accommodation_id}/${year}/${month}`);
+                    displayCalendar(reservation_want.data)
+                }else{
+                    break;
+                }
+            }else{
+                break;
+            }
+        }
+        console.log("상세조회를 종료합니다.")
+
 
         // 이후 reservation을 처리하는 코드 추가
     } catch (error) {
