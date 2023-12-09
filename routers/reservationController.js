@@ -165,16 +165,16 @@ reservationRouter.get("/:id/:year/:month", async (req, res) => {
 
         // 캘린더에 수용 가능한 인원 추가
         Object.keys(calendar).forEach(date => {
-            const capacity = reservations[0].accommodation.accommodatedPerson;
+            const accommodation = Accommodation.findById(accommodation_id);
+            const capacity = accommodation.accommodatedPerson;
+            const spaceType = accommodation.spaceType;
+
             const reservePeople = calendar[date]?.reservePeople || 0;
 
             if (reservations.length > 0) {
-                const spaceType = reservations[0].accommodation.spaceType;
-
                 let remainingCapacity;
                 if (spaceType === 'ENTIRE_PLACE') {
                     calendar[date].remainingCapacity = reservePeople === 0 ? 'O' : 'X';
-
 
                 } else if (spaceType === 'PRIVATE_ROOM') {
                     remainingCapacity = capacity - reservePeople;
