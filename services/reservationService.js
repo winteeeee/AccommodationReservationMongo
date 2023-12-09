@@ -1,7 +1,7 @@
 const axios = require("axios");
 const Accommodation = require('./Accommodation');
 
-async function getFare(houseId, checkInDate, checkOutDate) {
+async function getFare(houseId, checkIn, checkOut) {
     const house = await Accommodation.findById(houseId);
 
     if (!house) {
