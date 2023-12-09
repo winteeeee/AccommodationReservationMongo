@@ -1,5 +1,5 @@
 const axios = require("axios");
-const Accommodation = require('./Accommodation');
+const {Accommodation} = require('../models/accommodation');
 
 async function getFare(houseId, checkIn, checkOut) {
     const house = await Accommodation.findById(houseId);
@@ -49,8 +49,8 @@ async function bookHouse(guestId, houseId, checkInDate, checkOutDate, person) {
 
 async function cancelReserve(reserveId) {
     try {
-        const cancelReservation = await axios.post('http://127.0.0.1:3000/cancelReservation', reserveId);
-        console.log(cancelReservation);
+        await axios.post('http://127.0.0.1:3000/reservation/cancel', {reserveId: reserveId});
+        console.log("숙소 취소 완료")
     } catch(error) {
         console.error('숙소 취소 중 오류 발생', error.response ? error.response.data : error.message);
     }

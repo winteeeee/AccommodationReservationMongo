@@ -4,7 +4,7 @@ const {Accommodation} = require("../models/accommodation");
 const {Member} = require("../models/member");
 const reservationRouter = Router();
 
-reservationRouter.post("/cancelReservation", async(req, res) => {
+reservationRouter.post("/cancel", async(req, res) => {
     try{
         const {reserveId} = req.body;
         const cancelledReservation = await Reservation.findByIdAndDelete(reserveId);

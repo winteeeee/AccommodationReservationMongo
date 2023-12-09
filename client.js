@@ -1,6 +1,6 @@
 const rl = require("readline-sync")
 const {findHouse, findHouseDetail} = require("./services/accommodationService");
-const {bookHouse} = require("./services/reservationService");
+const {bookHouse, cancelReserve} = require("./services/reservationService");
 const {submitReview} = require("./services/reviewService");
 
 const client = async () => {
@@ -26,7 +26,16 @@ async function task1() {
     const checkOut = rl.question("체크아웃 날짜 : ")
     const applicant = rl.question("신청 인원 : ")
     const houseTypeCode = rl.question('숙소 종류를 선택하세요 (1. 개인, 2. 공간 전체): ');
-    await findHouse(checkIn, checkOut, applicant, houseTypeCode)
+    const accommodations = await findHouse(checkIn, checkOut, applicant, houseTypeCode)
+    console.log("================================================")
+    accommodations.forEach((e) => {
+        console.log(`id: ${e.id}`)
+        console.log(`공간 유형: ${e.spaceType}`)
+        console.log(`이름: ${e.name}`)
+        console.log(`총 가격: ${e.price}`)
+        console.log(`평균 별점: ${e.avgRating}`)
+        console.log("================================================")
+    })
     wait()
 }
 
@@ -51,7 +60,11 @@ async function task3() {
 }
 
 async function task4() {
-    //TODO 구현
+    console.log("[검사항목 4]")
+    console.log("- 게스트는 예약한 숙소를 취소할 수 있다")
+    const reserveId = rl.question("예약 ID : ")
+    await cancelReserve(reserveId)
+    wait()
 }
 
 async function task5() {
@@ -63,7 +76,7 @@ async function task6() {
     console.log("- 게스트는 체크아웃이 완료된 숙소에 별점(1~5)와 후기를 작성할 수 있다")
     const reserveId = rl.question("예약 ID : ")
     const startRating = rl.question("별점 : ")
-    const reviewContent = rl.question("후기 : ")//
+    const reviewContent = rl.question("후기 : ")
     await submitReview(reserveId, startRating, reviewContent)
     wait()
 }
