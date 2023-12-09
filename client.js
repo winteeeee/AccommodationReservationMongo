@@ -1,6 +1,6 @@
 const rl = require("readline-sync")
 const {findHouse, findHouseDetail} = require("./services/accommodationService");
-const {bookHouse} = require("./services/reservationService");
+const {bookHouse, cancelReserve} = require("./services/reservationService");
 const {submitReview} = require("./services/reviewService");
 
 const client = async () => {
@@ -60,7 +60,11 @@ async function task3() {
 }
 
 async function task4() {
-    //TODO 구현
+    console.log("[검사항목 4]")
+    console.log("- 게스트는 예약한 숙소를 취소할 수 있다")
+    const reserveId = rl.question("예약 ID : ")
+    await cancelReserve(reserveId)
+    wait()
 }
 
 async function task5() {
@@ -72,7 +76,7 @@ async function task6() {
     console.log("- 게스트는 체크아웃이 완료된 숙소에 별점(1~5)와 후기를 작성할 수 있다")
     const reserveId = rl.question("예약 ID : ")
     const startRating = rl.question("별점 : ")
-    const reviewContent = rl.question("후기 : ")//
+    const reviewContent = rl.question("후기 : ")
     await submitReview(reserveId, startRating, reviewContent)
     wait()
 }
