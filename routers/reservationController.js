@@ -84,7 +84,6 @@ reservationRouter.get("/guest/:guestId/:type", async(req, res) => {
     try {
         const guestId = req.params.guestId;
         const type = req.params.type;
-        console.log(type);
 
         const today = new Date();
         let condition = {};
@@ -94,9 +93,6 @@ reservationRouter.get("/guest/:guestId/:type", async(req, res) => {
             condition = { guest: guestId, 'dateInfo.0.endDate': { $gt: today } };
         } else if (type === 'terminated') {
             condition = { guest: guestId, 'dateInfo.0.startDate': { $lt: today } };
-        } else {
-            console.error('존재하지 않는 type입니다.');
-            return [];
         }
 
         const reservationList = await Reservation.find(condition)
@@ -124,9 +120,8 @@ reservationRouter.get("/guest/:guestId/:type", async(req, res) => {
                 '후기': reviewStatus
             };
         });
-        console.log("[숙박 완료 리스트]");
-        console.table(data);
 
+        return res.status(200).send({data});
     } catch(err) {
         console.log(err);
         return res.status(400).send({ error: err.message });
