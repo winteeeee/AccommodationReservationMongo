@@ -4,6 +4,37 @@ const {Accommodation} = require("../models/accommodation");
 const {Member} = require("../models/member");
 const reservationRouter = Router();
 
+async function getFare(houseId, checkInDate, checkOutDate, applicant) {
+    let accommodation = await Accommodation.findById(houseId);
+
+    console.log(accommodation);
+
+    const weekdayPrice = accommodation.weekdayFare || 0;  // 주중 가격
+    const weekendPrice = accommodation.weekendFare || 0;  // 주말 가격
+
+    console.log(weekdayPrice);
+    console.log(weekendPrice);
+    // 간단한 가정: 주말(금, 토)이라면 주말 가격을 사용, 그 외에는 주중 가격을 사용
+    const currentDate = new Date(checkInDate);
+    let totalPrice = 0;
+
+    while (currentDate < new Date(checkOutDate)) {
+        const dayOfWeek = currentDate.getDay();
+
+        // 간단한 가정: 주말(금, 토)이라면 주말 가격, 그 외에는 주중 가격 적용
+        if (dayOfWeek === 5 || dayOfWeek === 6) {
+            totalPrice += weekendPrice;
+        } else {
+            totalPrice += weekdayPrice;
+        }
+
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    console.log(totalPrice);
+
+    return accommodation.houseType === 'PRIVATE_ROOM' ? totalPrice * applicant : totalPrice;
+}
 reservationRouter.post("/cancel", async(req, res) => {
     try{
         const {reserveId} = req.body;
@@ -19,11 +50,12 @@ reservationRouter.post("/cancel", async(req, res) => {
 
 reservationRouter.post("/", async(req, res) => {
     try {
-        const {guestId, houseId, review, dateInfo, person, fare} = req.body;
-        const guest = await Member.findOne({id: guestId})
+        const {guestId, houseId, review, dateInfo, person} = req.body;
+        const guest = await Member.findById(guestId)
         const house = await Accommodation.findById(houseId)
         const room = house.spaceType === "ENTIRE_PLACE" ? house.room : person
-
+        const fare =  await getFare(houseId, dateInfo[0].startDate, dateInfo[0].endDate, person);
+        console.log(fare);
         const reservation = new Reservation({
             guest: guest,
             accommodation: house,
@@ -31,7 +63,8 @@ reservationRouter.post("/", async(req, res) => {
             dateInfo: dateInfo,
             person: person,
             room: room,
-            fare: fare});
+            fare: fare
+        });
         
         await reservation.save();
         return res.status(200).send({reservation});
@@ -39,6 +72,66 @@ reservationRouter.post("/", async(req, res) => {
         return res.status(400).send({error: error.message});
     }
 });
+
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+reservationRouter.get("/guest/:guestId/:type", async(req, res) => {
+    try {
+        const guestId = req.params.guestId;
+        const type = req.params.type;
+        console.log(type);
+
+        const today = new Date();
+        let condition = {};
+        if (type === 'all') {
+            condition = {guest: guestId};
+        } else if (type === 'oncoming') {
+            condition = { guest: guestId, 'dateInfo.0.endDate': { $gt: today } };
+        } else if (type === 'terminated') {
+            condition = { guest: guestId, 'dateInfo.0.startDate': { $lt: today } };
+        } else {
+            console.error('존재하지 않는 type입니다.');
+            return [];
+        }
+
+        const reservationList = await Reservation.find(condition)
+            .populate('accommodation')
+            .sort({ 'dateInfo.0.startDate': -1 })
+            .exec();
+
+        if (!reservationList) {
+            console.log("Reservation not found for the provided guestId");
+            return;
+        }
+
+        const data = reservationList.map((reservation) => {
+            const { accommodation, review, dateInfo, fare } = reservation;
+            const accommodationName = accommodation.name;
+            const checkIn = formatDate(dateInfo[0].startDate);
+            const checkOut = formatDate(dateInfo[0].endDate);
+            const reviewStatus = review ? 'O' : 'X';
+
+            return {
+                '숙소명': accommodationName,
+                '체크인': checkIn,
+                '체크아웃': checkOut,
+                '요금': fare,
+                '후기': reviewStatus
+            };
+        });
+        console.log("[숙박 완료 리스트]");
+        console.table(data);
+
+    } catch(err) {
+        console.log(err);
+        return res.status(400).send({ error: err.message });
+    }
+})
 reservationRouter.get("/:id", async (req, res) => {
     try {
         const accommodation_id = req.params.id;
