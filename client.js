@@ -1,12 +1,13 @@
 const rl = require("readline-sync")
 const {findHouse, findHouseDetail} = require("./services/accommodationService");
-const {bookHouse, cancelReserve} = require("./services/reservationService");
+const {bookHouse, cancelReserve, guestMyPage} = require("./services/reservationService");
 const {submitReview} = require("./services/reviewService");
 
 const client = async () => {
     console.log("클라이언트 실행 중")
     await task1()
     await task2()
+    await task3()
     await task3()
     await task4()
     await task5()
@@ -68,7 +69,16 @@ async function task4() {
 }
 
 async function task5() {
-    //TODO 구현
+    console.log("[검사항목 5]")
+    console.log("- 게스트는 1) 전체 2) 체크아웃이 완료된 숙소 3) 체크인 예정인 숙소로 조회 가능하고 해당 리스트는 날짜 기준 내림차순으로 정렬")
+    console.log("- 숙박 완료 숙소의 경우 후기 작성 여부를 o, x로 표시한다.")
+    const guestId = rl.question("게스트 ID : ")
+    let type = 'all'
+    while (type === 'all' || type === 'oncoming' || type === 'terminated') {
+        type = rl.question("검색 조건 입력(all, oncoming, terminated) : ")
+        await guestMyPage(guestId, type)
+    }
+    wait()
 }
 
 async function task6() {

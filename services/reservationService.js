@@ -1,5 +1,4 @@
 const axios = require("axios");
-const {Accommodation} = require('../models/accommodation');
 
 async function bookHouse(guestId, houseId, startDate, endDate, person) {
     try {
@@ -17,7 +16,6 @@ async function bookHouse(guestId, houseId, startDate, endDate, person) {
         };
 
         const reservation = await axios.post('http://127.0.0.1:3000/reservation', reservationData);
-        console.log(reservation);
     } catch(error) {
         console.error('숙소 예약 중 오류 발생', error.response ? error.response.data : error.message);
     }
@@ -32,4 +30,16 @@ async function cancelReserve(reserveId) {
     }
 }
 
-module.exports = {bookHouse, cancelReserve}
+async function guestMyPage(guestId, type) {
+    try {
+        if (type === 'all' || type === 'oncoming' || type === 'terminated') {
+            const {data} = await axios.get(`http://127.0.0.1:3000/reservation/guest/${guestId}/${type}`)
+            console.log("[숙박 완료 리스트]");
+            console.table(data.data)
+        }
+    } catch (error) {
+        console.error("마이페이지 조회 중 오류 발생", error.response ? error.response.data : error.message)
+    }
+}
+
+module.exports = {bookHouse, cancelReserve, guestMyPage}
