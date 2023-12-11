@@ -4,6 +4,7 @@ const { Reservation } = require("../models/reservation");
 const accommodationRouter = Router();
 
 accommodationRouter.get("/", async (req, res) => {
+    console.log('[accommodationRouter - GET :: /]')
     try {
         const { checkIn, checkOut, applicant, houseType } = req.query; // Change to req.query
         const accommodations = await Accommodation.find({

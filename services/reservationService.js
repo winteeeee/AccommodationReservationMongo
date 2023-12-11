@@ -16,7 +16,6 @@ async function bookHouse(guestId, houseId, startDate, endDate, person) {
         };
 
         const reservation = await axios.post('http://127.0.0.1:3000/reservation', reservationData);
-        console.log(reservation);
     } catch(error) {
         console.error('숙소 예약 중 오류 발생', error.response ? error.response.data : error.message);
     }

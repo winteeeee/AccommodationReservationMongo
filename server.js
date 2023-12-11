@@ -16,7 +16,7 @@ const DB_URI = "mongodb://127.0.0.1:27017/accommodation_reservation_mongo";
 const server = async () => {
     try {
         await mongoose.connect(DB_URI)
-        //await generateDummyData()
+        await generateDummyData()
         app.use(express.json())
         app.use("/review", reviewController);
         app.use("/accommodation", accommodationController)

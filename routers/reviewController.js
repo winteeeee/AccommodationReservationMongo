@@ -4,6 +4,7 @@ const { Reservation } = require("../models/reservation");
 
 const reviewRouter = Router();
 reviewRouter.post("/", async (req, res) => {
+    console.log('[reviewRouter - POST :: /]')
     try {
 
         const { star, reviewContent, reserveId} = req.body;
@@ -30,6 +31,7 @@ reviewRouter.post("/", async (req, res) => {
 });
 
 reviewRouter.get("/:id", async (req, res) => {
+    console.log('[reviewRouter - GET :: /:id]')
     const accommodation_id = req.params.id;
 
 
@@ -54,19 +56,8 @@ reviewRouter.get("/:id", async (req, res) => {
             reviewData.push(reviewObj);
         }
     });
-    console.log(reviewData)
+
     return res.send({ reviews: reviewData });
 });
-//
-// reviewRouter.get("/:accommodationId/:memberId", async (req, res) => {
-//     const { accommodationId, memberId } = req.params;
-//
-//     if (!isValidObjectId(accommodationId) || !isValidObjectId(memberId))
-//         return res.status(400).send({ error: "유효하지 않은 accommodationId 또는 memberId" });
-//
-//     const reviews = await Comment.find({ accommodation: accommodationId, member: memberId });
-//     return res.send({ reviews });
-// });
-
 
 module.exports = reviewRouter;
