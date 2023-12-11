@@ -124,7 +124,6 @@ reservationRouter.get("/guest/:guestId/:type", async(req, res) => {
                 '후기': reviewStatus
             };
         });
-
         console.log("[숙박 완료 리스트]");
         console.table(data);
 
