@@ -4,6 +4,37 @@ const {Accommodation} = require("../models/accommodation");
 const {Member} = require("../models/member");
 const reservationRouter = Router();
 
+async function getFare(houseId, checkInDate, checkOutDate, applicant) {
+    let accommodation = await Accommodation.findById(houseId);
+
+    console.log(accommodation);
+
+    const weekdayPrice = accommodation.weekdayFare || 0;  // 주중 가격
+    const weekendPrice = accommodation.weekendFare || 0;  // 주말 가격
+
+    console.log(weekdayPrice);
+    console.log(weekendPrice);
+    // 간단한 가정: 주말(금, 토)이라면 주말 가격을 사용, 그 외에는 주중 가격을 사용
+    const currentDate = new Date(checkInDate);
+    let totalPrice = 0;
+
+    while (currentDate < new Date(checkOutDate)) {
+        const dayOfWeek = currentDate.getDay();
+
+        // 간단한 가정: 주말(금, 토)이라면 주말 가격, 그 외에는 주중 가격 적용
+        if (dayOfWeek === 5 || dayOfWeek === 6) {
+            totalPrice += weekendPrice;
+        } else {
+            totalPrice += weekdayPrice;
+        }
+
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    console.log(totalPrice);
+
+    return accommodation.houseType === 'PRIVATE_ROOM' ? totalPrice * applicant : totalPrice;
+}
 reservationRouter.post("/cancel", async(req, res) => {
     try{
         const {reserveId} = req.body;
@@ -19,11 +50,12 @@ reservationRouter.post("/cancel", async(req, res) => {
 
 reservationRouter.post("/", async(req, res) => {
     try {
-        const {guestId, houseId, review, dateInfo, person, fare} = req.body;
-        const guest = await Member.findOne({id: guestId})
+        const {guestId, houseId, review, dateInfo, person} = req.body;
+        const guest = await Member.findById(guestId)
         const house = await Accommodation.findById(houseId)
         const room = house.spaceType === "ENTIRE_PLACE" ? house.room : person
-
+        const fare =  await getFare(houseId, dateInfo[0].startDate, dateInfo[0].endDate, person);
+        console.log(fare);
         const reservation = new Reservation({
             guest: guest,
             accommodation: house,
@@ -31,7 +63,8 @@ reservationRouter.post("/", async(req, res) => {
             dateInfo: dateInfo,
             person: person,
             room: room,
-            fare: fare});
+            fare: fare
+        });
         
         await reservation.save();
         return res.status(200).send({reservation});

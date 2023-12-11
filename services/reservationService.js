@@ -1,30 +1,7 @@
 const axios = require("axios");
 const {Accommodation} = require('../models/accommodation');
 
-async function getFare(houseId, checkIn, checkOut) {
-    const house = await Accommodation.findById(houseId);
-
-    if (!house) {
-        throw new Error('숙소 정보를 찾을 수 없습니다.');
-    }
-
-    const weekdayFare = house.weekdayFare;
-    const weekendFare = house.weekendFare;
-
-    const timeDifference = checkOut.getTime() - checkIn.getTime(); // 밀리초 단위로 기간 계산
-
-    const numberOfDays = timeDifference / (1000 * 60 * 60 * 24);
-
-    const weekends = Math.floor((numberOfDays + checkIn.getDay()) / 7) * 2;
-
-    const remainingDays = numberOfDays - weekends;
-
-    const totalFare = (remainingDays * weekdayFare) + (weekends * weekendFare);
-
-    return totalFare;
-}
-
-async function bookHouse(guestId, houseId, checkInDate, checkOutDate, person) {
+async function bookHouse(guestId, houseId, startDate, endDate, person) {
     try {
         const reservationData = {
             guestId: guestId,
@@ -32,12 +9,11 @@ async function bookHouse(guestId, houseId, checkInDate, checkOutDate, person) {
             review: null,
             dateInfo: [
                 {
-                    startDate: checkInDate,
-                    endDate: checkOutDate
+                    startDate: startDate,
+                    endDate: endDate
                 }
             ],
             person: person,
-            fare: getFare(houseId, checkInDate, checkOutDate),
         };
 
         const reservation = await axios.post('http://127.0.0.1:3000/reservation', reservationData);
