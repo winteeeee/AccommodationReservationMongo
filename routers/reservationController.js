@@ -72,6 +72,67 @@ reservationRouter.post("/", async(req, res) => {
         return res.status(400).send({error: error.message});
     }
 });
+
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+reservationRouter.get("/guest/:guestId/:type", async(req, res) => {
+    try {
+        const guestId = req.params.guestId;
+        const type = req.params.type;
+        console.log(type);
+
+        const today = new Date();
+        let condition = {};
+        if (type === 'all') {
+            condition = {guest: guestId};
+        } else if (type === 'oncoming') {
+            condition = { guest: guestId, 'dateInfo.0.endDate': { $gt: today } };
+        } else if (type === 'terminated') {
+            condition = { guest: guestId, 'dateInfo.0.startDate': { $lt: today } };
+        } else {
+            console.error('존재하지 않는 type입니다.');
+            return [];
+        }
+
+        const reservationList = await Reservation.find(condition)
+            .populate('accommodation')
+            .sort({ 'dateInfo.0.startDate': -1 })
+            .exec();
+
+        if (!reservationList) {
+            console.log("Reservation not found for the provided guestId");
+            return;
+        }
+
+        const data = reservationList.map((reservation) => {
+            const { accommodation, review, dateInfo, fare } = reservation;
+            const accommodationName = accommodation.name;
+            const checkIn = formatDate(dateInfo[0].startDate);
+            const checkOut = formatDate(dateInfo[0].endDate);
+            const reviewStatus = review ? 'O' : 'X';
+
+            return {
+                '숙소명': accommodationName,
+                '체크인': checkIn,
+                '체크아웃': checkOut,
+                '요금': fare,
+                '후기': reviewStatus
+            };
+        });
+
+        console.log("[숙박 완료 리스트]");
+        console.table(data);
+
+    } catch(err) {
+        console.log(err);
+        return res.status(400).send({ error: err.message });
+    }
+})
 reservationRouter.get("/:id", async (req, res) => {
     try {
         const accommodation_id = req.params.id;
