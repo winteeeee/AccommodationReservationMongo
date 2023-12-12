@@ -87,9 +87,9 @@ reservationRouter.get("/guest/:guestId/:type", async(req, res) => {
         if (type === 'all') {
             condition = {guest: guestId};
         } else if (type === 'oncoming') {
-            condition = { guest: guestId, 'dateInfo.0.endDate': { $gt: today } };
+            condition = { guest: guestId, 'dateInfo.0.startDate': { $gt: today } };
         } else if (type === 'terminated') {
-            condition = { guest: guestId, 'dateInfo.0.startDate': { $lt: today } };
+            condition = { guest: guestId, 'dateInfo.0.endDate': { $lt: today } };
         }
 
         const reservationList = await Reservation.find(condition)
